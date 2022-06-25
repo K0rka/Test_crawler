@@ -20,5 +20,5 @@ def handler(url):
         logger.log_info(f"Finished crawling for {url}")
 
 
-if __name__ == "__main__":
-    handler("monzo.com")
+# if __name__ == "__main__":
+#     handler("monzo.com")
