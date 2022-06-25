@@ -1,20 +1,20 @@
 import pytest
 from unittest.mock import call
 
-from src import handler
+from src import handler as h
 from src.handler import handler
 
 
 @pytest.fixture(autouse=True)
 def mock_logger(mocker):
-    logger = mocker.patch.object(handler, "logger")
+    logger = mocker.patch.object(h, "logger")
     return logger
 
 
 def test_handler(mocker, mock_logger):
     mock_url = "https://example_url"
     crawl_mock = mocker.patch(
-        "src.crawl.Crawler.crawl",
+        "src.handler.Crawler.crawl",
     )
     handler(mock_url)
 
@@ -26,11 +26,11 @@ def test_handler(mocker, mock_logger):
 def test_handler_throw(mocker, mock_logger):
     mock_url = "https://another_example_url"
     crawl_mock = mocker.patch(
-        "src.crawl.Crawler.crawl",
+        "src.handler.Crawler.crawl",
     )
     crawl_mock.side_effect = ValueError("Some value is wrong")
     handler(mock_url)
     crawl_mock.assert_called_once()
     mock_logger.log_info.has_calls([call(f"Start crawling with {mock_url}"), call(f"Finished crawling for {mock_url}")])
-    mock_logger.log_error.assert_called_once_with(f"Failed with some value is wrong")
+    mock_logger.log_error.assert_called_once_with(f"Failed with Some value is wrong")
     mock_logger.log_metric.assert_called_once_with("process_failed", 1)

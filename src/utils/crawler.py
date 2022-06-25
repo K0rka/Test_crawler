@@ -16,6 +16,9 @@ class Crawler:
     def __init__(self, url, logger):
         self.crawler_results = CrowlerResult(logger)
         self.initial_url = url
+        self.urls_to_visit = set()
+        self.visited_urls = set()
+
         self.urls_to_visit.add(url)
         self.logger = logger
 
