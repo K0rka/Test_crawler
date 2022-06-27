@@ -2,10 +2,12 @@ from bs4 import BeautifulSoup
 import requests
 from src.utils.crawler_results import CrowlerResult
 
-# 1. Validate url: it shouldn't start with https, we can try to assume it. If there's no https working, let customer know and config to
 # 2. Delete / in the end of the root url, otherwise it might be double / when we add relative path
 
 # Class which is responsible for iterating through all the required urls
+# Assumptions:
+# - Link is everything in "a href" tags
+# - There's no any required order for going to links or saving them
 class Crawler:
     headers = requests.utils.default_headers()
 
@@ -44,6 +46,8 @@ class Crawler:
                 return
             soup = BeautifulSoup(req.content, "html.parser")
             local_links = set()
+            # Extracting links is taken from bs docs:
+            # https://www.crummy.com/software/BeautifulSoup/bs4/doc/
             found_links = soup.find_all("a")
             for link in found_links:
                 local_links.add(link.get("href"))
@@ -55,6 +59,10 @@ class Crawler:
         # Take care of http start case
         if not url.startswith("https://"):
             url = "https://" + url
+        # Cutting last / to handle relative paths later
+        # Otheerwise it shouldn't affect anything
+        if url.endswith("/"):
+            url = url[:-1]
         if requests.head(url).status_code == 200:
             return url
         return None
@@ -70,6 +78,7 @@ class Crawler:
         for next_link in found_links:
             if next_link is None or len(next_link) == 0:
                 self.logger.log_error("Link not found in href tag")
+                continue
             # assuming this is relative link
             if next_link.startswith("/"):
                 next_link = root_url + next_link
