@@ -63,7 +63,9 @@ class Crawler:
         # Otheerwise it shouldn't affect anything
         if url.endswith("/"):
             url = url[:-1]
-        if requests.head(url).status_code == 200:
+        # Unless it's a real error, pretend that url is valid
+        # Could have been done with regex, to be ~faster, however somewhat less reliable and more complicated to read
+        if requests.head(url).status_code < 400:
             return url
         return None
 

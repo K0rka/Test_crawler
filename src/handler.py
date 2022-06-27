@@ -1,5 +1,6 @@
 from src.utils.logger import Logger
 from src.utils.crawler import Crawler
+import sys
 
 logger = Logger()
 
@@ -19,6 +20,14 @@ def handler(url):
     finally:
         logger.log_info(f"Finished crawling for {url}")
 
-
+# This is only testing support,
+# For that reason for now handling command line arguments is like this
 if __name__ == "__main__":
-    handler("monzo.com")
+    args = sys.argv
+    # args[0] = current file
+    # args[1] = url if exists
+    url = "monzo.com"
+    if len(args) >= 2:
+        url = args[1]
+
+    handler(url)
